@@ -1,19 +1,19 @@
 import React, { InputHTMLAttributes, ButtonHTMLAttributes, TextareaHTMLAttributes } from 'react';
 
 // --- Styles Helpers ---
-const bevelOut = "border-t-white border-l-white border-b-black border-r-black border-2";
-const bevelIn = "border-t-black border-l-black border-b-white border-r-white border-2";
+const bevelOut = "border-t-[var(--border-light)] border-l-[var(--border-light)] border-b-[var(--border-dark)] border-r-[var(--border-dark)] border-2";
+const bevelIn = "border-t-[var(--border-dark)] border-l-[var(--border-dark)] border-b-[var(--border-light)] border-r-[var(--border-light)] border-2";
 
 // --- Window Container ---
 export const RetroWindow: React.FC<{ title: string; children: React.ReactNode; className?: string; onClose?: () => void }> = ({ title, children, className = "", onClose }) => {
   return (
-    <div className={`bg-[#c0c0c0] ${bevelOut} p-1 shadow-lg flex flex-col ${className}`}>
-      <div className="bg-[#000080] text-white px-2 py-1 font-bold text-sm flex justify-between items-center select-none mb-1 bg-gradient-to-r from-[#000080] to-[#1084d0]">
+    <div className={`bg-[var(--bg-chrome)] text-[var(--text-chrome)] ${bevelOut} p-1 shadow-lg flex flex-col ${className}`}>
+      <div className="bg-[var(--highlight)] text-[var(--highlight-text)] px-2 py-1 font-bold text-sm flex justify-between items-center select-none mb-1">
         <span>{title}</span>
         {onClose && (
           <button 
             onClick={onClose} 
-            className={`bg-[#c0c0c0] text-black w-5 h-5 flex items-center justify-center text-xs font-bold ${bevelOut} active:border-t-black active:border-l-black active:border-b-white active:border-r-white`}
+            className={`bg-[var(--bg-chrome)] text-[var(--text-chrome)] w-5 h-5 flex items-center justify-center text-xs font-bold ${bevelOut} active:border-t-[var(--border-dark)] active:border-l-[var(--border-dark)] active:border-b-[var(--border-light)] active:border-r-[var(--border-light)]`}
           >
             ✕
           </button>
@@ -29,7 +29,7 @@ export const RetroWindow: React.FC<{ title: string; children: React.ReactNode; c
 // --- Panel/Card ---
 export const RetroPanel: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => {
   return (
-    <div className={`bg-[#c0c0c0] ${bevelOut} p-4 ${className}`}>
+    <div className={`bg-[var(--bg-chrome)] text-[var(--text-chrome)] ${bevelOut} p-4 ${className}`}>
       {children}
     </div>
   );
@@ -38,7 +38,7 @@ export const RetroPanel: React.FC<{ children: React.ReactNode; className?: strin
 // --- Inset Panel ---
 export const RetroInset: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => {
   return (
-    <div className={`bg-white ${bevelIn} p-2 ${className}`}>
+    <div className={`bg-[var(--bg-inset)] text-[var(--text-main)] ${bevelIn} p-2 ${className}`}>
       {children}
     </div>
   );
@@ -49,11 +49,11 @@ export const RetroButton: React.FC<ButtonHTMLAttributes<HTMLButtonElement> & { v
   return (
     <button 
       className={`
-        bg-[#c0c0c0] 
+        bg-[var(--bg-chrome)] text-[var(--text-chrome)]
         ${bevelOut} 
-        active:border-t-black active:border-l-black active:border-b-white active:border-r-white 
+        active:border-t-[var(--border-dark)] active:border-l-[var(--border-dark)] active:border-b-[var(--border-light)] active:border-r-[var(--border-light)] 
         px-4 py-1 
-        text-sm font-bold active:bg-[#b0b0b0] transition-none
+        text-sm font-bold active:bg-[var(--border-shadow)] transition-none
         ${variant === 'primary' ? 'border-2' : ''}
         ${className}
       `} 
@@ -70,7 +70,7 @@ export const RetroButton: React.FC<ButtonHTMLAttributes<HTMLButtonElement> & { v
 export const RetroInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({ className = "", ...props }) => {
   return (
     <input 
-      className={`bg-white ${bevelIn} px-2 py-1 text-sm outline-none focus:bg-yellow-50 ${className}`} 
+      className={`bg-[var(--bg-inset)] text-[var(--text-main)] ${bevelIn} px-2 py-1 text-sm outline-none focus:bg-[var(--bg-inset)] ${className}`} 
       {...props} 
     />
   );
@@ -80,7 +80,7 @@ export const RetroInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({ cl
 export const RetroTextarea: React.FC<TextareaHTMLAttributes<HTMLTextAreaElement>> = ({ className = "", ...props }) => {
   return (
     <textarea 
-      className={`bg-white ${bevelIn} px-2 py-1 text-sm outline-none focus:bg-yellow-50 resize-none ${className}`} 
+      className={`bg-[var(--bg-inset)] text-[var(--text-main)] ${bevelIn} px-2 py-1 text-sm outline-none focus:bg-[var(--bg-inset)] resize-none ${className}`} 
       {...props} 
     />
   );
@@ -91,13 +91,13 @@ export const RetroSelect: React.FC<React.SelectHTMLAttributes<HTMLSelectElement>
   return (
     <div className="relative inline-block w-full">
       <select 
-        className={`w-full bg-white ${bevelIn} px-2 py-1 text-sm outline-none appearance-none rounded-none focus:bg-yellow-50 ${className}`} 
+        className={`w-full bg-[var(--bg-inset)] text-[var(--text-main)] ${bevelIn} px-2 py-1 text-sm outline-none appearance-none rounded-none focus:bg-[var(--bg-inset)] ${className}`} 
         {...props}
       >
         {children}
       </select>
-      <div className="absolute right-1 top-1 bottom-1 w-6 bg-[#c0c0c0] border-t-white border-l-white border-b-black border-r-black border-2 pointer-events-none flex items-center justify-center">
-        <span className="text-[10px]">▼</span>
+      <div className="absolute right-1 top-1 bottom-1 w-6 bg-[var(--bg-chrome)] border-t-[var(--border-light)] border-l-[var(--border-light)] border-b-[var(--border-dark)] border-r-[var(--border-dark)] border-2 pointer-events-none flex items-center justify-center">
+        <span className="text-[10px] text-[var(--text-chrome)]">▼</span>
       </div>
     </div>
   );
@@ -108,13 +108,13 @@ export const RetroProgressBar: React.FC<{ value: number; max: number }> = ({ val
   const percentage = Math.min(100, Math.max(0, (value / max) * 100));
   
   return (
-    <div className={`relative h-6 w-full bg-white ${bevelIn}`}>
+    <div className={`relative h-6 w-full bg-[var(--bg-inset)] ${bevelIn}`}>
       <div 
-        className="h-full bg-[#000080] flex items-center justify-end overflow-hidden" 
+        className="h-full bg-[var(--highlight)] flex items-center justify-end overflow-hidden" 
         style={{ width: `${percentage}%` }}
       >
       </div>
-      <div className="absolute inset-0 flex items-center justify-center text-xs font-bold mix-blend-difference text-white pointer-events-none">
+      <div className="absolute inset-0 flex items-center justify-center text-xs font-bold mix-blend-difference text-[var(--text-chrome)] pointer-events-none" style={{ filter: 'invert(1)' }}>
         {Math.round(percentage)}%
       </div>
     </div>

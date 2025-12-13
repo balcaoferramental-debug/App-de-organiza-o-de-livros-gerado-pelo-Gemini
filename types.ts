@@ -22,6 +22,12 @@ export interface Quote {
   page: number;
 }
 
+export interface GlossaryEntry {
+  id: string;
+  word: string;
+  definition: string;
+}
+
 export interface Book {
   id: string;
   title: string;
@@ -36,6 +42,8 @@ export interface Book {
   generalSummary: string;
   chapterSummaries: ChapterSummary[];
   quotes: Quote[];
+  glossary: GlossaryEntry[];
+  targetFinishDate?: string; // Format YYYY-MM-DD
   createdAt: number;
 }
 

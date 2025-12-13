@@ -7,11 +7,39 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
+      :root {
+        --bg-chrome: #c0c0c0;
+        --bg-inset: #ffffff;
+        --text-main: #000000;
+        --text-chrome: #000000;
+        --border-light: #ffffff;
+        --border-dark: #000000;
+        --border-shadow: #808080;
+        --highlight: #000080;
+        --highlight-text: #ffffff;
+        --dimmed: #808080;
+      }
+
+      body.dark-mode {
+        --bg-chrome: #383838;
+        --bg-inset: #1a1a1a;
+        --text-main: #e0e0e0;
+        --text-chrome: #dddddd;
+        --border-light: #606060;
+        --border-dark: #000000;
+        --border-shadow: #252525;
+        --highlight: #006060;
+        --highlight-text: #ffffff;
+        --dimmed: #a0a0a0;
+      }
+
       body {
         font-family: 'Noto Sans', sans-serif;
-        background-color: #c0c0c0; /* Windows 95 Silver */
+        background-color: var(--bg-chrome);
+        color: var(--text-main);
         -webkit-font-smoothing: none;
         overflow: hidden; /* Prevent body scroll, handle in app */
+        transition: background-color 0.2s;
       }
       /* Custom Scrollbar for Webkit */
       ::-webkit-scrollbar {
@@ -19,23 +47,23 @@
         height: 16px;
       }
       ::-webkit-scrollbar-track {
-        background: #dfdfdf;
+        background: var(--bg-chrome);
       }
       ::-webkit-scrollbar-thumb {
-        background-color: #c0c0c0;
-        border-top: 2px solid #fff;
-        border-left: 2px solid #fff;
-        border-right: 2px solid #404040;
-        border-bottom: 2px solid #404040;
+        background-color: var(--bg-chrome);
+        border-top: 2px solid var(--border-light);
+        border-left: 2px solid var(--border-light);
+        border-right: 2px solid var(--border-dark);
+        border-bottom: 2px solid var(--border-dark);
       }
       ::-webkit-scrollbar-button {
-        background-color: #c0c0c0;
+        background-color: var(--bg-chrome);
         width: 16px;
         height: 16px;
-        border-top: 2px solid #fff;
-        border-left: 2px solid #fff;
-        border-right: 2px solid #404040;
-        border-bottom: 2px solid #404040;
+        border-top: 2px solid var(--border-light);
+        border-left: 2px solid var(--border-light);
+        border-right: 2px solid var(--border-dark);
+        border-bottom: 2px solid var(--border-dark);
       }
     </style>
   <script type="importmap">

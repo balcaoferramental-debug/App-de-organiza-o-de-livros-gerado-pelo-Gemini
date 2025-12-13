@@ -1,27 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Book, Genre, ViewState, ChapterSummary, Quote } from './types';
+import { Book, Genre, ViewState, ChapterSummary, Quote, GlossaryEntry } from './types';
 import { RetroPanel, RetroButton, RetroInput, RetroTextarea, RetroSelect, RetroProgressBar, RetroInset } from './components/RetroUI';
 import StarRating from './components/StarRating';
-import { Plus, BookOpen, Search, ArrowLeft, Trash2, Image as ImageIcon, Book as BookIcon, Minimize, Maximize, X } from 'lucide-react';
+import { Plus, BookOpen, Search, ArrowLeft, Trash2, Image as ImageIcon, Book as BookIcon, Minimize, Maximize, X, Moon, Sun, Calendar } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
 const STORAGE_KEY = 'diary_95_books';
+const THEME_KEY = 'diary_95_theme';
 
 const App: React.FC = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [view, setView] = useState<ViewState>('HOME');
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const [filterGenre, setFilterGenre] = useState<string>('ALL');
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // --- Initial Load ---
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
+    const storedBooks = localStorage.getItem(STORAGE_KEY);
+    if (storedBooks) {
       try {
-        setBooks(JSON.parse(stored));
+        setBooks(JSON.parse(storedBooks));
       } catch (e) {
         console.error("Failed to load books", e);
       }
+    }
+
+    const storedTheme = localStorage.getItem(THEME_KEY);
+    if (storedTheme === 'dark') {
+      setIsDarkMode(true);
+      document.body.classList.add('dark-mode');
     }
   }, []);
 
@@ -29,6 +37,18 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
   }, [books]);
+
+  const toggleTheme = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    if (newMode) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem(THEME_KEY, 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem(THEME_KEY, 'light');
+    }
+  };
 
   const handleAddBook = (book: Book) => {
     setBooks(prev => [book, ...prev]);
@@ -50,10 +70,10 @@ const App: React.FC = () => {
   const selectedBook = books.find(b => b.id === selectedBookId);
 
   return (
-    <div className="h-screen w-full bg-[#c0c0c0] flex flex-col font-sans text-gray-900 overflow-hidden border-t-2 border-l-2 border-white border-r-2 border-b-2 border-gray-600">
+    <div className="h-screen w-full bg-[var(--bg-chrome)] text-[var(--text-chrome)] flex flex-col font-sans overflow-hidden border-t-2 border-l-2 border-[var(--border-light)] border-r-2 border-b-2 border-[var(--border-dark)]">
       
-      {/* App Title Bar (Like a maximized window) */}
-      <div className="bg-[#000080] text-white px-2 py-1 font-bold text-sm flex justify-between items-center select-none bg-gradient-to-r from-[#000080] to-[#1084d0] shrink-0">
+      {/* App Title Bar */}
+      <div className="bg-[var(--highlight)] text-[var(--highlight-text)] px-2 py-1 font-bold text-sm flex justify-between items-center select-none shrink-0">
         <div className="flex items-center gap-2">
           <BookIcon size={16} className="text-white drop-shadow-sm" />
           <span className="tracking-wide">Meu Diário de Leitura 95</span>
@@ -61,28 +81,34 @@ const App: React.FC = () => {
         
         {/* Decorative Window Controls */}
         <div className="flex gap-1">
-          <button className="bg-[#c0c0c0] text-black w-5 h-5 flex items-center justify-center border-t-white border-l-white border-b-black border-r-black border-2 active:border-t-black active:border-l-black active:border-b-white active:border-r-white">
+          <button className="bg-[var(--bg-chrome)] text-[var(--text-chrome)] w-5 h-5 flex items-center justify-center border-t-[var(--border-light)] border-l-[var(--border-light)] border-b-[var(--border-dark)] border-r-[var(--border-dark)] border-2 active:border-t-[var(--border-dark)] active:border-l-[var(--border-dark)] active:border-b-[var(--border-light)] active:border-r-[var(--border-light)]">
             <Minimize size={10} strokeWidth={4} />
           </button>
-          <button className="bg-[#c0c0c0] text-black w-5 h-5 flex items-center justify-center border-t-white border-l-white border-b-black border-r-black border-2 active:border-t-black active:border-l-black active:border-b-white active:border-r-white">
+          <button className="bg-[var(--bg-chrome)] text-[var(--text-chrome)] w-5 h-5 flex items-center justify-center border-t-[var(--border-light)] border-l-[var(--border-light)] border-b-[var(--border-dark)] border-r-[var(--border-dark)] border-2 active:border-t-[var(--border-dark)] active:border-l-[var(--border-dark)] active:border-b-[var(--border-light)] active:border-r-[var(--border-light)]">
             <Maximize size={10} strokeWidth={4} />
           </button>
-          <button className="bg-[#c0c0c0] text-black w-5 h-5 flex items-center justify-center border-t-white border-l-white border-b-black border-r-black border-2 active:border-t-black active:border-l-black active:border-b-white active:border-r-white ml-1">
+          <button className="bg-[var(--bg-chrome)] text-[var(--text-chrome)] w-5 h-5 flex items-center justify-center border-t-[var(--border-light)] border-l-[var(--border-light)] border-b-[var(--border-dark)] border-r-[var(--border-dark)] border-2 active:border-t-[var(--border-dark)] active:border-l-[var(--border-dark)] active:border-b-[var(--border-light)] active:border-r-[var(--border-light)] ml-1">
             <X size={12} strokeWidth={4} />
           </button>
         </div>
       </div>
 
       {/* Menu Bar / Toolbar */}
-      <div className="flex items-center gap-1 p-1 border-b border-gray-400 shadow-sm shrink-0 bg-[#c0c0c0]">
-        <span className="px-2 py-0.5 hover:bg-[#000080] hover:text-white cursor-default text-sm">Arquivo</span>
-        <span className="px-2 py-0.5 hover:bg-[#000080] hover:text-white cursor-default text-sm">Editar</span>
-        <span className="px-2 py-0.5 hover:bg-[#000080] hover:text-white cursor-default text-sm">Exibir</span>
-        <span className="px-2 py-0.5 hover:bg-[#000080] hover:text-white cursor-default text-sm">Ajuda</span>
+      <div className="flex items-center justify-between p-1 border-b border-[var(--border-shadow)] shadow-sm shrink-0 bg-[var(--bg-chrome)]">
+        <div className="flex gap-1">
+          <span className="px-2 py-0.5 hover:bg-[var(--highlight)] hover:text-[var(--highlight-text)] cursor-default text-sm">Arquivo</span>
+          <span className="px-2 py-0.5 hover:bg-[var(--highlight)] hover:text-[var(--highlight-text)] cursor-default text-sm">Editar</span>
+          <span className="px-2 py-0.5 hover:bg-[var(--highlight)] hover:text-[var(--highlight-text)] cursor-default text-sm">Exibir</span>
+          <span className="px-2 py-0.5 hover:bg-[var(--highlight)] hover:text-[var(--highlight-text)] cursor-default text-sm">Ajuda</span>
+        </div>
+        <button onClick={toggleTheme} className="px-2 py-0.5 text-xs border border-[var(--border-shadow)] hover:bg-[var(--border-shadow)] hover:text-[var(--highlight-text)] flex items-center gap-1 transition-colors">
+          {isDarkMode ? <Sun size={12} /> : <Moon size={12} />}
+          {isDarkMode ? "Modo Claro" : "Modo Escuro"}
+        </button>
       </div>
 
       {/* Main Action Bar */}
-      <div className="flex gap-2 p-2 border-b-white border-b-2 border-t-gray-400 border-t shrink-0">
+      <div className="flex gap-2 p-2 border-b-[var(--border-light)] border-b-2 border-t-[var(--border-shadow)] border-t shrink-0">
         <RetroButton onClick={() => setView('HOME')} disabled={view === 'HOME' && !selectedBookId}>
           <div className="flex items-center gap-1">
             <BookOpen size={16} />
@@ -98,8 +124,8 @@ const App: React.FC = () => {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-hidden p-2 bg-[#c0c0c0]">
-        <div className="h-full w-full border-t-gray-600 border-l-gray-600 border-b-white border-r-white border-2 p-1">
+      <div className="flex-1 overflow-hidden p-2 bg-[var(--bg-chrome)]">
+        <div className="h-full w-full border-t-[var(--border-shadow)] border-l-[var(--border-shadow)] border-b-[var(--border-light)] border-r-[var(--border-light)] border-2 p-1">
           <div className="h-full w-full overflow-hidden">
             {view === 'HOME' && (
               <HomeView 
@@ -128,11 +154,11 @@ const App: React.FC = () => {
       </div>
       
       {/* Status Bar */}
-      <div className="bg-[#c0c0c0] border-t-gray-400 border-t p-1 flex gap-2 text-xs shrink-0 select-none">
-        <div className="flex-1 border-t-gray-600 border-l-gray-600 border-b-white border-r-white border inset-shadow px-2 py-0.5">
+      <div className="bg-[var(--bg-chrome)] border-t-[var(--border-shadow)] border-t p-1 flex gap-2 text-xs shrink-0 select-none">
+        <div className="flex-1 border-t-[var(--border-shadow)] border-l-[var(--border-shadow)] border-b-[var(--border-light)] border-r-[var(--border-light)] border inset-shadow px-2 py-0.5">
           {view === 'HOME' ? 'Pronto.' : view === 'ADD_BOOK' ? 'Modo de Edição' : `Visualizando: ${selectedBook?.title}`}
         </div>
-        <div className="w-32 border-t-gray-600 border-l-gray-600 border-b-white border-r-white border inset-shadow px-2 py-0.5">
+        <div className="w-32 border-t-[var(--border-shadow)] border-l-[var(--border-shadow)] border-b-[var(--border-light)] border-r-[var(--border-light)] border inset-shadow px-2 py-0.5">
           Livros: {books.length}
         </div>
       </div>
@@ -152,7 +178,7 @@ const HomeView: React.FC<{
   const filteredBooks = books.filter(b => filterGenre === 'ALL' || b.genre === filterGenre);
 
   return (
-    <div className="flex flex-col h-full bg-[#c0c0c0]">
+    <div className="flex flex-col h-full bg-[var(--bg-chrome)]">
       <div className="flex items-center justify-between mb-2 p-2">
         <div className="flex items-center gap-2">
           <Search size={16} />
@@ -168,14 +194,14 @@ const HomeView: React.FC<{
             ))}
           </RetroSelect>
         </div>
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-[var(--dimmed)]">
           {filteredBooks.length} objeto(s)
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 bg-white border-t-black border-l-black border-b-white border-r-white border-2 mx-1 mb-1">
+      <div className="flex-1 overflow-y-auto p-4 bg-[var(--bg-inset)] border-t-[var(--border-dark)] border-l-[var(--border-dark)] border-b-[var(--border-light)] border-r-[var(--border-light)] border-2 mx-1 mb-1">
         {filteredBooks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-500">
+          <div className="flex flex-col items-center justify-center h-full text-[var(--dimmed)]">
             <BookOpen size={48} className="mb-2 opacity-20" />
             <p>Nenhum livro encontrado nesta estante.</p>
           </div>
@@ -185,13 +211,13 @@ const HomeView: React.FC<{
               <div 
                 key={book.id}
                 onClick={() => onSelect(book.id)}
-                className="group cursor-pointer flex flex-col gap-2 items-center p-2 hover:bg-blue-100 hover:outline hover:outline-1 hover:outline-blue-500 hover:outline-dashed"
+                className="group cursor-pointer flex flex-col gap-2 items-center p-2 hover:bg-[var(--highlight)] hover:text-[var(--highlight-text)] border border-transparent hover:border-dotted hover:border-[var(--border-light)]"
               >
-                <div className="relative w-full aspect-[2/3] bg-gray-200 border-t-white border-l-white border-b-black border-r-black border-2 shadow-md">
+                <div className="relative w-full aspect-[2/3] bg-[var(--border-shadow)] border-t-[var(--border-light)] border-l-[var(--border-light)] border-b-[var(--border-dark)] border-r-[var(--border-dark)] border-2 shadow-md">
                   {book.coverImage ? (
                     <img src={book.coverImage} alt={book.title} className="w-full h-full object-cover" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-[#008080] text-white p-2 text-center">
+                    <div className="w-full h-full flex items-center justify-center bg-[var(--highlight)] text-[var(--highlight-text)] p-2 text-center">
                       <span className="font-serif italic text-sm">{book.title}</span>
                     </div>
                   )}
@@ -248,6 +274,8 @@ const AddBookView: React.FC<{ onSave: (b: Book) => void; onCancel: () => void }>
       generalSummary: '',
       chapterSummaries: [],
       quotes: [],
+      glossary: [],
+      targetFinishDate: formData.targetFinishDate,
       createdAt: Date.now()
     };
 
@@ -257,7 +285,7 @@ const AddBookView: React.FC<{ onSave: (b: Book) => void; onCancel: () => void }>
   return (
     <div className="flex justify-center items-start h-full overflow-y-auto p-4">
       <RetroPanel className="w-full max-w-3xl">
-        <div className="mb-4 pb-2 border-b-2 border-gray-400 flex justify-between items-center">
+        <div className="mb-4 pb-2 border-b-2 border-[var(--border-shadow)] flex justify-between items-center">
           <h2 className="text-lg font-bold flex items-center gap-2">
             <Plus size={20} /> Propriedades do Livro
           </h2>
@@ -266,8 +294,8 @@ const AddBookView: React.FC<{ onSave: (b: Book) => void; onCancel: () => void }>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Tabs simulation for form */}
-          <div className="flex gap-1 border-b border-gray-400 mb-4">
-             <div className="px-3 py-1 bg-[#c0c0c0] border-t-white border-l-white border-r-black border-2 border-b-0 -mb-[2px] pb-2 z-10 font-bold text-sm">Geral</div>
+          <div className="flex gap-1 border-b border-[var(--border-shadow)] mb-4">
+             <div className="px-3 py-1 bg-[var(--bg-chrome)] border-t-[var(--border-light)] border-l-[var(--border-light)] border-r-[var(--border-dark)] border-2 border-b-0 -mb-[2px] pb-2 z-10 font-bold text-sm">Geral</div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -291,8 +319,8 @@ const AddBookView: React.FC<{ onSave: (b: Book) => void; onCancel: () => void }>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex flex-col gap-1">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="flex flex-col gap-1 col-span-1 md:col-span-1">
               <label className="text-sm">Gênero:</label>
               <RetroSelect 
                 value={formData.genre} 
@@ -321,6 +349,14 @@ const AddBookView: React.FC<{ onSave: (b: Book) => void; onCancel: () => void }>
                 onChange={e => setFormData({...formData, totalPages: Number(e.target.value)})}
               />
             </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm">Meta de Término:</label>
+              <RetroInput 
+                type="date"
+                value={formData.targetFinishDate || ''} 
+                onChange={e => setFormData({...formData, targetFinishDate: e.target.value})}
+              />
+            </div>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -334,12 +370,12 @@ const AddBookView: React.FC<{ onSave: (b: Book) => void; onCancel: () => void }>
 
           <div className="flex flex-col gap-1">
              <label className="text-sm">Capa:</label>
-             <div className="flex items-center gap-4 border p-2 border-gray-400 border-dotted">
-                <div className="w-16 h-24 bg-gray-100 border-2 border-gray-400 flex items-center justify-center overflow-hidden shrink-0">
+             <div className="flex items-center gap-4 border p-2 border-[var(--border-shadow)] border-dotted">
+                <div className="w-16 h-24 bg-[var(--border-shadow)] border-2 border-[var(--border-shadow)] flex items-center justify-center overflow-hidden shrink-0">
                   {formData.coverImage ? (
                     <img src={formData.coverImage} className="w-full h-full object-cover" />
                   ) : (
-                    <ImageIcon className="text-gray-400 w-8 h-8" />
+                    <ImageIcon className="text-[var(--dimmed)] w-8 h-8" />
                   )}
                 </div>
                 <div className="flex-1">
@@ -359,7 +395,7 @@ const AddBookView: React.FC<{ onSave: (b: Book) => void; onCancel: () => void }>
 };
 
 const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack: () => void; onDelete: () => void }> = ({ book, onUpdate, onBack, onDelete }) => {
-  const [activeTab, setActiveTab] = useState<'INFO' | 'CHAPTERS' | 'QUOTES' | 'SUMMARY'>('INFO');
+  const [activeTab, setActiveTab] = useState<'INFO' | 'CHAPTERS' | 'QUOTES' | 'SUMMARY' | 'GLOSSARY'>('INFO');
   
   // Local state for edits to avoid updating parent on every keystroke
   const [editedBook, setEditedBook] = useState<Book>(book);
@@ -374,6 +410,30 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
     setEditedBook(updated);
     onUpdate(updated);
   };
+
+  const calculateDailyGoal = (): string | null => {
+    if (!editedBook.targetFinishDate) return null;
+    
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const target = new Date(editedBook.targetFinishDate);
+    target.setHours(0,0,0,0);
+    
+    // Difference in milliseconds
+    const diffTime = target.getTime() - today.getTime();
+    // Difference in days
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    const pagesRemaining = editedBook.totalPages - editedBook.currentPage;
+    
+    if (pagesRemaining <= 0) return "Livro Concluído!";
+    if (diffDays <= 0) return "Data meta expirada!";
+    
+    const dailyPages = Math.ceil(pagesRemaining / diffDays);
+    return `${dailyPages} pág.`;
+  };
+
+  const dailyGoal = calculateDailyGoal();
 
   const handleAddQuote = (text: string, page: number) => {
     const newQuote: Quote = { id: uuidv4(), text, page };
@@ -394,6 +454,23 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
     const updatedChapters = editedBook.chapterSummaries.map(c => c.id === id ? { ...c, chapterTitle, content } : c);
     saveChanges({ chapterSummaries: updatedChapters });
   }
+
+  const handleAddGlossary = (word: string, definition: string) => {
+    const newEntry: GlossaryEntry = { id: uuidv4(), word, definition };
+    const currentGlossary = editedBook.glossary || [];
+    saveChanges({ glossary: [...currentGlossary, newEntry] });
+  };
+
+  const handleUpdateGlossary = (id: string, word: string, definition: string) => {
+    const currentGlossary = editedBook.glossary || [];
+    const updatedGlossary = currentGlossary.map(g => g.id === id ? { ...g, word, definition } : g);
+    saveChanges({ glossary: updatedGlossary });
+  };
+
+  const handleDeleteGlossary = (id: string) => {
+    const currentGlossary = editedBook.glossary || [];
+    saveChanges({ glossary: currentGlossary.filter(g => g.id !== id) });
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -427,11 +504,11 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
         {/* Left Sidebar: Cover & Quick Stats */}
         <div className="w-1/3 max-w-[250px] flex flex-col gap-4 overflow-y-auto">
            <RetroPanel className="flex flex-col items-center">
-              <div className="w-full aspect-[2/3] bg-gray-200 border-2 border-gray-600 shadow-md mb-2 overflow-hidden relative group">
+              <div className="w-full aspect-[2/3] bg-[var(--border-shadow)] border-2 border-[var(--border-shadow)] shadow-md mb-2 overflow-hidden relative group">
                 {editedBook.coverImage ? (
                   <img src={editedBook.coverImage} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-[#008080] text-white">No Cover</div>
+                  <div className="w-full h-full flex items-center justify-center bg-[var(--highlight)] text-[var(--highlight-text)]">No Cover</div>
                 )}
                 {/* Upload overlay */}
                 <label className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
@@ -452,7 +529,7 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
                 placeholder="Autor"
               />
               
-              <div className="w-full bg-white/20 p-2 border-t border-gray-400">
+              <div className="w-full bg-[var(--bg-inset)] bg-opacity-20 p-2 border-t border-[var(--border-shadow)]">
                 <label className="text-xs font-bold block mb-1">Avaliação:</label>
                 <div className="flex justify-center">
                   <StarRating 
@@ -470,20 +547,41 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
                 <span>Pág:</span>
                 <input 
                   type="number" 
-                  className="w-16 p-1 border-2 border-gray-400 text-right"
+                  className="w-16 p-1 bg-[var(--bg-inset)] text-[var(--text-main)] border-2 border-[var(--border-shadow)] text-right"
                   value={editedBook.currentPage}
                   min={0}
                   max={editedBook.totalPages}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) => saveChanges({ currentPage: Math.min(Number(e.target.value), editedBook.totalPages) })}
                 />
                 <span>/</span>
                  <input 
                   type="number" 
-                  className="w-16 p-1 border-2 border-gray-400 text-right"
+                  className="w-16 p-1 bg-[var(--bg-inset)] text-[var(--text-main)] border-2 border-[var(--border-shadow)] text-right"
                   value={editedBook.totalPages}
                   min={1}
+                  onFocus={(e) => e.target.select()}
                   onChange={(e) => saveChanges({ totalPages: Number(e.target.value) })}
                 />
+             </div>
+             
+             <div className="border-t border-[var(--border-shadow)] my-3"></div>
+             
+             <label className="text-xs font-bold block mb-1">Meta de Término:</label>
+             <div className="flex flex-col gap-2">
+               <RetroInput 
+                  type="date"
+                  value={editedBook.targetFinishDate || ''}
+                  onChange={(e) => saveChanges({ targetFinishDate: e.target.value })}
+                  className="w-full text-xs"
+               />
+               
+               {editedBook.targetFinishDate && (
+                 <RetroInset className="bg-[var(--bg-inset)] p-1 text-center">
+                    <span className="text-[10px] uppercase text-[var(--dimmed)] block">Meta Diária</span>
+                    <span className="font-bold text-sm text-[var(--highlight)]">{dailyGoal}</span>
+                 </RetroInset>
+               )}
              </div>
            </RetroPanel>
         </div>
@@ -491,12 +589,13 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
         {/* Right Content: Tabs */}
         <div className="flex-1 flex flex-col h-full overflow-hidden">
            {/* Tab Headers */}
-           <div className="flex items-end pl-2 gap-1 border-b-2 border-white relative z-10">
+           <div className="flex items-end pl-2 gap-1 border-b-2 border-[var(--border-light)] relative z-10">
              {[
                {id: 'INFO', label: 'Detalhes'},
                {id: 'SUMMARY', label: 'Resumo'},
                {id: 'CHAPTERS', label: 'Capítulos'},
                {id: 'QUOTES', label: 'Citações'},
+               {id: 'GLOSSARY', label: 'Glossário'},
              ].map(tab => (
                <button 
                  key={tab.id}
@@ -505,8 +604,8 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
                    px-4 py-1 text-sm font-bold rounded-t-sm
                    border-t-2 border-l-2 border-r-2 
                    ${activeTab === tab.id 
-                     ? 'bg-[#c0c0c0] border-t-white border-l-white border-r-black border-b-[#c0c0c0] -mb-[2px] pb-2 z-20' 
-                     : 'bg-gray-400 text-gray-800 border-gray-300 border-b-white mb-0 hover:bg-gray-300'}
+                     ? 'bg-[var(--bg-chrome)] border-t-[var(--border-light)] border-l-[var(--border-light)] border-r-[var(--border-dark)] border-b-[var(--bg-chrome)] -mb-[2px] pb-2 z-20' 
+                     : 'bg-[var(--bg-chrome)] text-[var(--text-chrome)] border-t-[var(--border-light)] border-l-[var(--border-light)] border-r-[var(--border-shadow)] border-b-[var(--border-light)] mb-0 mt-2 pb-1 hover:mt-1 z-0'}
                  `}
                >
                  {tab.label}
@@ -515,13 +614,13 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
            </div>
 
            {/* Tab Content Container */}
-           <div className="flex-1 bg-[#c0c0c0] border-l-white border-t-white border-r-black border-b-black border-2 p-4 overflow-y-auto">
+           <div className="flex-1 bg-[var(--bg-chrome)] border-l-[var(--border-light)] border-t-[var(--border-light)] border-r-[var(--border-dark)] border-b-[var(--border-dark)] border-2 p-4 overflow-y-auto">
               
               {activeTab === 'INFO' && (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <span className="text-xs font-bold text-gray-600 block mb-1">Gênero</span>
+                      <span className="text-xs font-bold text-[var(--dimmed)] block mb-1">Gênero</span>
                       <RetroSelect 
                         value={editedBook.genre} 
                         onChange={(e) => saveChanges({ genre: e.target.value as Genre })}
@@ -532,7 +631,7 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
                       </RetroSelect>
                     </div>
                     <div>
-                      <span className="text-xs font-bold text-gray-600 block mb-1">Lançamento</span>
+                      <span className="text-xs font-bold text-[var(--dimmed)] block mb-1">Lançamento</span>
                       <RetroInput 
                         type="date"
                         value={editedBook.releaseDate}
@@ -542,7 +641,7 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
                     </div>
                   </div>
                   <div className="flex flex-col flex-1">
-                    <span className="text-xs font-bold text-gray-600 block mb-1">Descrição</span>
+                    <span className="text-xs font-bold text-[var(--dimmed)] block mb-1">Descrição</span>
                     <RetroTextarea 
                       value={editedBook.description || ""} 
                       onChange={(e) => saveChanges({ description: e.target.value })}
@@ -573,7 +672,7 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
                    <div className="flex-1 overflow-y-auto space-y-4 pr-2">
                      {editedBook.chapterSummaries.map((chapter) => (
                        <RetroPanel key={chapter.id} className="relative group">
-                         <div className="flex justify-between items-center mb-2 border-b border-gray-400 pb-1">
+                         <div className="flex justify-between items-center mb-2 border-b border-[var(--border-shadow)] pb-1">
                            <RetroInput 
                               value={chapter.chapterTitle} 
                               onChange={(e) => handleUpdateChapter(chapter.id, e.target.value, chapter.content)}
@@ -598,7 +697,7 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
                      ))}
 
                      {/* New Chapter Form */}
-                     <div className="border-t-2 border-gray-400 pt-4 mt-4">
+                     <div className="border-t-2 border-[var(--border-shadow)] pt-4 mt-4">
                        <h4 className="text-sm font-bold mb-2">Adicionar Novo Resumo</h4>
                        <NewChapterForm onAdd={handleAddChapter} />
                      </div>
@@ -611,16 +710,16 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
                   <h3 className="font-bold mb-2">Trechos Favoritos</h3>
                   <div className="flex-1 overflow-y-auto space-y-3 pr-2 mb-4">
                      {editedBook.quotes.map((quote) => (
-                       <div key={quote.id} className="bg-yellow-50 border border-gray-400 p-3 shadow-sm relative group">
+                       <div key={quote.id} className="bg-[var(--bg-inset)] border border-[var(--border-shadow)] p-3 shadow-sm relative group">
                           <RetroTextarea 
                             value={quote.text}
                             onChange={(e) => handleUpdateQuote(quote.id, e.target.value, quote.page)}
-                            className="font-serif italic text-gray-800 mb-2 w-full bg-transparent border-none focus:bg-white/50"
+                            className="font-serif italic text-[var(--text-main)] mb-2 w-full bg-transparent border-none focus:bg-[var(--bg-chrome)]"
                             rows={2}
                           />
                           <div className="flex justify-between items-center mt-2">
                             <div className="flex items-center gap-1">
-                              <span className="text-xs font-bold text-gray-500">Pág.</span>
+                              <span className="text-xs font-bold text-[var(--dimmed)]">Pág.</span>
                               <RetroInput 
                                 type="number" 
                                 value={quote.page} 
@@ -639,8 +738,45 @@ const BookDetailView: React.FC<{ book: Book; onUpdate: (b: Book) => void; onBack
                      ))}
                   </div>
                   
-                  <div className="border-t-2 border-gray-400 pt-2">
+                  <div className="border-t-2 border-[var(--border-shadow)] pt-2">
                     <NewQuoteForm onAdd={handleAddQuote} />
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'GLOSSARY' && (
+                <div className="h-full flex flex-col">
+                  <h3 className="font-bold mb-2">Glossário de Termos</h3>
+                  <div className="flex-1 overflow-y-auto space-y-3 pr-2 mb-4">
+                     {(editedBook.glossary || []).map((entry) => (
+                       <RetroPanel key={entry.id} className="relative group">
+                          <div className="flex justify-between items-start mb-2">
+                            <RetroInput 
+                              value={entry.word}
+                              onChange={(e) => handleUpdateGlossary(entry.id, e.target.value, entry.definition)}
+                              className="font-bold text-sm w-1/2 bg-transparent border-none focus:bg-[var(--bg-inset)] focus:border-b"
+                              placeholder="Palavra"
+                            />
+                            <button 
+                             onClick={() => handleDeleteGlossary(entry.id)}
+                             className="text-red-600 text-xs hover:underline opacity-0 group-hover:opacity-100"
+                           >
+                             Remover
+                           </button>
+                          </div>
+                          <RetroTextarea 
+                            value={entry.definition}
+                            onChange={(e) => handleUpdateGlossary(entry.id, entry.word, e.target.value)}
+                            className="w-full text-sm"
+                            rows={2}
+                            placeholder="Definição ou significado..."
+                          />
+                       </RetroPanel>
+                     ))}
+                  </div>
+                  
+                  <div className="border-t-2 border-[var(--border-shadow)] pt-2">
+                    <NewGlossaryForm onAdd={handleAddGlossary} />
                   </div>
                 </div>
               )}
@@ -687,6 +823,40 @@ const NewQuoteForm: React.FC<{ onAdd: (text: string, page: number) => void }> = 
   );
 };
 
+const NewGlossaryForm: React.FC<{ onAdd: (word: string, definition: string) => void }> = ({ onAdd }) => {
+  const [word, setWord] = useState('');
+  const [definition, setDefinition] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (word && definition) {
+      onAdd(word, definition);
+      setWord('');
+      setDefinition('');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 bg-[var(--border-shadow)] p-2 border border-[var(--border-shadow)]">
+      <RetroInput 
+        placeholder="Palavra ou Termo" 
+        value={word} 
+        onChange={e => setWord(e.target.value)} 
+        className="font-bold"
+      />
+      <RetroTextarea 
+        placeholder="Significado..." 
+        rows={2}
+        value={definition} 
+        onChange={e => setDefinition(e.target.value)} 
+      />
+      <div className="flex justify-end">
+        <RetroButton type="submit" disabled={!word || !definition}>Adicionar Verbete</RetroButton>
+      </div>
+    </form>
+  );
+};
+
 const NewChapterForm: React.FC<{ onAdd: (title: string, content: string) => void }> = ({ onAdd }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -701,7 +871,7 @@ const NewChapterForm: React.FC<{ onAdd: (title: string, content: string) => void
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-2 bg-gray-200 p-2 border border-gray-400">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 bg-[var(--border-shadow)] p-2 border border-[var(--border-shadow)]">
       <RetroInput 
         placeholder="Título do Capítulo (ex: Cap. 1 - O Início)" 
         value={title} 
