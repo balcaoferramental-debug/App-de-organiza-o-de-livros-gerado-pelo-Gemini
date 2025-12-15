@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Meu Diário de Leitura 95</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind via CDN removed; using PostCSS + Tailwind plugin -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
       :root {
@@ -66,17 +66,7 @@
         border-bottom: 2px solid var(--border-dark);
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "uuid": "https://esm.sh/uuid@^13.0.0"
-  }
-}
-</script>
+  <!-- Using local dependencies bundled by Vite; importmap removed -->
 </head>
   <body>
     <div id="root"></div>

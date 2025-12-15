@@ -8,6 +8,10 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 3000,
         host: '0.0.0.0',
+        // HMR websockets podem falhar em ambientes remotos (codespaces / github.dev).
+        // Desabilitamos HMR para evitar erros de `wss://...` no cliente.
+        // Se preferir HMR, configure `hmr` com host/protocol/clientPort adequados.
+        hmr: false,
       },
       plugins: [react()],
       define: {

@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base tweaks to align with previous index.html styles */
+body {
+  -webkit-font-smoothing: none;
+}
